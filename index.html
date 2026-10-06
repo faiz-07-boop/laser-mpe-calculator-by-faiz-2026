@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Laser AEL & MPE Calculator by Faiz</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f2f4f7;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #172033;
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 27px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .container {
+            width: min(1100px, 94%);
+            margin: 25px auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 12px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .unit {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .test-button {
+            background: #475569;
+            margin-left: 10px;
+        }
+
+        .test-button:hover {
+            background: #334155;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .result {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .result-title {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .highlight {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .warning {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            padding: 13px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 13px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 11px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+            padding: 20px;
+        }
+
+        @media (max-width: 700px) {
+
+            .input-grid,
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .test-button {
+                margin-left: 0;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>LASER AEL & MPE CALCULATOR</h1>
+    <p>Educational laser safety calculator</p>
+</div>
+
+<div class="container">
+
+    <!-- INPUT -->
+    <div class="card">
+
+        <h2>Input Parameters</h2>
+
+        <div class="input-grid">
+
+            <div>
+                <label for="wavelength">
+                    Working Wavelength
+                </label>
+
+                <input
+                    type="number"
+                    id="wavelength"
+                    value="996"
+                    min="180"
+                    max="1000000"
+                    step="0.1"
+                >
+
+                <div class="unit">
+                    nm — allowed range: 180 to 1,000,000 nm
+                </div>
+            </div>
+
+
+            <div>
+                <label for="exposure">
+                    Exposure Time
+                </label>
+
+                <input
+                    type="number"
+                    id="exposure"
+                    value="10"
+                    min="1e-13"
+                    max="30000"
+                    step="any"
+                >
+
+                <div class="unit">
+                    seconds
+                </div>
+            </div>
+
+        </div>
+
+
+        <button onclick="calculate()">
+            Calculate
+        </button>
+
+        <button class="test-button" onclick="loadTestCase()">
+            Test 996 nm / 10 s
+        </button>
+
+        <div id="error" class="error"></div>
+
+    </div>
+
+
+    <!-- BASIC INFORMATION -->
+
+    <div class="card">
+
+        <h2>Laser Parameters</h2>
+
+        <div class="results-grid">
+
+            <div class="result">
+                <div class="result-title">
+                    Spectral Region
+                </div>
+
+                <div class="result-value" id="region">
+                    —
+                </div>
+            </div>
+
+
+            <div class="result">
+                <div class="result-title">
+                    Exposure Time
+                </div>
+
+                <div class="result-value" id="displayTime">
+                    —
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MPE -->
+
+    <div class="card">
+
+        <h2>Maximum Permissible Exposure</h2>
+
+        <div class="results-grid">
+
+            <div class="result highlight">
+
+                <div class="result-title">
+                    Ocular Exposure MPE
+                </div>
+
+                <div class="result-value" id="eyeMPE">
+                    —
+                </div>
+
+                <div class="unit" id="eyeType">
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="result highlight">
+
+                <div class="result-title">
+                    Skin Exposure MPE
+                </div>
+
+                <div class="result-value" id="skinMPE">
+                    —
+                </div>
+
+                <div class="unit" id="skinType">
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CORRECTION FACTORS -->
+
+    <div class="card">
+
+        <h2>Correction Factors</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Factor</th>
+                    <th>Value</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>C1</td>
+                    <td id="c1">—</td>
+                    <td>UV time-dependent correction</td>
+                </tr>
+
+                <tr>
+                    <td>C2</td>
+                    <td id="c2">—</td>
+                    <td>UV wavelength correction</td>
+                </tr>
+
+                <tr>
+                    <td>C3</td>
+                    <td id="c3">—</td>
+                    <td>Blue-light correction</td>
+                </tr>
+
+                <tr>
+                    <td>C4</td>
+                    <td id="c4">—</td>
+                    <td>Near-IR wavelength correction</td>
+                </tr>
+
+                <tr>
+                    <td>C7</td>
+                    <td id="c7">—</td>
+                    <td>Retinal thermal correction</td>
+                </tr>
+
+                <tr>
+                    <td>T1</td>
+                    <td id="t1">—</td>
+                    <td>UV transition time</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- APERTURES -->
+
+    <div class="card">
+
+        <h2>Measurement Apertures</h2>
+
+        <div class="results-grid">
+
+            <div class="result">
+
+                <div class="result-title">
+                    Eye Collection Aperture
+                </div>
+
+                <div class="result-value" id="eyeAperture">
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="result">
+
+                <div class="result-title">
+                    Skin Collection Aperture
+                </div>
+
+                <div class="result-value" id="skinAperture">
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- EQUATION -->
+
+    <div class="card">
+
+        <h2>Calculation Branch</h2>
+
+        <div class="result">
+
+            <div class="result-title">
+                Selected IEC MPE region
+            </div>
+
+            <div class="result-value" id="branch">
+                —
+            </div>
+
+        </div>
+
+        <div id="warning" class="warning"></div>
+
+    </div>
+
+
+    <div class="footer">
+        Educational implementation based on IEC 60825-1 concepts.
+        Not a certified laser safety assessment.
+    </div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   LASER MPE CALCULATOR
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   Utility
+------------------------------------------------------------ */
+
+function formatNumber(value) {
+
+    if (!Number.isFinite(value)) {
+        return "N/A";
+    }
+
+    if (Math.abs(value) >= 10000 ||
+        (Math.abs(value) > 0 && Math.abs(value) < 0.001)) {
+
+        return value.toExponential(4);
+    }
+
+    return value.toPrecision(5);
+}
+
+
+function showError(message) {
+
+    const box = document.getElementById("error");
+
+    box.innerText = message;
+    box.style.display = "block";
+}
+
+
+function hideError() {
+
+    document.getElementById("error").style.display = "none";
+}
+
+
+/* ------------------------------------------------------------
+   Spectral Region
+------------------------------------------------------------ */
+
+function spectralRegion(w) {
+
+    if (w < 315)
+        return "UV-C / UV-B";
+
+    if (w < 400)
+        return "UV-A";
+
+    if (w < 700)
+        return "Visible";
+
+    if (w < 1400)
+        return "IR-A";
+
+    if (w < 3000)
+        return "IR-B";
+
+    return "IR-C";
+}
+
+
+/* ------------------------------------------------------------
+   C1
+------------------------------------------------------------ */
+
+function calcC1(t) {
+
+    return 5.6e3 * Math.pow(t, 0.25);
+}
+
+
+/* ------------------------------------------------------------
+   T1
+------------------------------------------------------------ */
+
+function calcT1(w) {
+
+    if (w < 302.5 || w > 315)
+        return null;
+
+    return Math.pow(10, 0.8 * (w - 295)) * 1e-15;
+}
+
+
+/* ------------------------------------------------------------
+   C2
+------------------------------------------------------------ */
+
+function calcC2(w) {
+
+    if (w <= 302.5)
+        return 30;
+
+    if (w <= 315)
+        return Math.pow(10, 0.2 * (w - 295));
+
+    return 1;
+}
+
+
+/* ------------------------------------------------------------
+   C3
+------------------------------------------------------------ */
+
+function calcC3(w) {
+
+    if (w < 400 || w > 600)
+        return 1;
+
+    if (w <= 450)
+        return 1;
+
+    return Math.pow(10, 0.02 * (w - 450));
+}
+
+
+/* ------------------------------------------------------------
+   C4
+------------------------------------------------------------ */
+
+function calcC4(w) {
+
+    if (w < 700)
+        return 1;
+
+    if (w <= 1050)
+        return Math.pow(10, 0.002 * (w - 700));
+
+    if (w <= 1400)
+        return 5;
+
+    return 1;
+}
+
+
+/* ------------------------------------------------------------
+   C7
+------------------------------------------------------------ */
+
+function calcC7(w) {
+
+    if (w < 700)
+        return 1;
+
+    if (w <= 1150)
+        return 1;
+
+    if (w <= 1200)
+        return Math.pow(10, 0.018 * (w - 1150));
+
+    if (w <= 1400)
+        return 8;
+
+    return 1;
+}
+
+
+/* ------------------------------------------------------------
+   Eye aperture
+------------------------------------------------------------ */
+
+function eyeAperture(w, t) {
+
+    if (w < 400)
+        return 1;
+
+    if (w <= 1400)
+        return 7;
+
+    if (w < 1e5) {
+
+        if (t <= 0.35)
+            return 1;
+
+        if (t < 10)
+            return 1.5 * Math.pow(t, 3/8);
+
+        return 3.5;
+    }
+
+    return 11;
+}
+
+
+/* ------------------------------------------------------------
+   Skin aperture
+------------------------------------------------------------ */
+
+function skinAperture(w) {
+
+    if (w >= 1e5)
+        return 11;
+
+    return 3.5;
+}
+
+
+/* ============================================================
+   OCULAR MPE
+============================================================ */
+
+function ocularMPE(w, t) {
+
+    let value;
+    let type;
+    let branch;
+
+
+    /* 180–302.5 nm */
+
+    if (w >= 180 && w <= 302.5) {
+
+        if (t < 1e-9) {
+
+            value = 3e10;
+            type = "Irradiance (W/m²)";
+            branch = "180–302.5 nm, t < 10⁻⁹ s";
+
+        } else {
+
+            value = 30 / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "180–302.5 nm, radiant exposure limit";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 302.5–315 nm */
+
+    if (w > 302.5 && w <= 315) {
+
+        const T1 = calcT1(w);
+        const C2 = calcC2(w);
+
+        if (t <= T1) {
+
+            value = calcC1(t) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "302.5–315 nm, C1 branch";
+
+        } else {
+
+            value = C2 / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "302.5–315 nm, C2 branch";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 315–400 nm */
+
+    if (w > 315 && w < 400) {
+
+        if (t < 1e-9) {
+
+            value = 1e4;
+            type = "Irradiance (W/m²)";
+            branch = "315–400 nm";
+
+        } else {
+
+            value = 1e4 / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "315–400 nm";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 400–450 nm */
+
+    if (w >= 400 && w < 450) {
+
+        if (t <= 1e-9) {
+
+            value = 1e-3 / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "400–450 nm short exposure";
+
+        } else if (t <= 10) {
+
+            value = (18 * Math.pow(t, 0.75)) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "400–450 nm photochemical branch";
+
+        } else {
+
+            value = 100 / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "400–450 nm long exposure";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 450–500 nm */
+
+    if (w >= 450 && w < 500) {
+
+        const C3 = calcC3(w);
+
+        value = Math.min(
+            10,
+            100 * C3 / t
+        );
+
+        type = "Dual-limit equivalent irradiance (W/m²)";
+        branch = "450–500 nm dual MPE limits";
+
+        return {value, type, branch};
+    }
+
+
+    /* 500–700 nm */
+
+    if (w >= 500 && w < 700) {
+
+        if (t <= 1e-9) {
+
+            value = 10 / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "500–700 nm short exposure";
+
+        } else if (t < 10) {
+
+            value = 18 * Math.pow(t, 0.75) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "500–700 nm time-dependent";
+
+        } else {
+
+            value = 10;
+            type = "Irradiance (W/m²)";
+            branch = "500–700 nm long exposure";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 700–1050 nm */
+
+    if (w >= 700 && w <= 1050) {
+
+        const C4 = calcC4(w);
+        const C7 = calcC7(w);
+
+        if (t < 1e-9) {
+
+            value = (1e-3 * C4) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "700–1050 nm short exposure";
+
+        } else if (t < 10) {
+
+            value = (18 * Math.pow(t, 0.75) * C4) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "700–1050 nm time-dependent";
+
+        } else {
+
+            value = 10 * C4 * C7;
+            type = "Irradiance (W/m²)";
+            branch = "700–1050 nm long exposure";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 1050–1400 nm */
+
+    if (w > 1050 && w <= 1400) {
+
+        const C7 = calcC7(w);
+
+        if (t < 1e-9) {
+
+            value = (1e-3 * C7) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "1050–1400 nm short exposure";
+
+        } else if (t < 10) {
+
+            value = (90 * Math.pow(t, 0.75) * C7) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "1050–1400 nm time-dependent";
+
+        } else {
+
+            value = 10 * C7;
+            type = "Irradiance (W/m²)";
+            branch = "1050–1400 nm long exposure";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 1400–1500 nm */
+
+    if (w > 1400 && w <= 1500) {
+
+        if (t < 1e-9) {
+
+            value = 1e12;
+            type = "Irradiance (W/m²)";
+            branch = "1400–1500 nm";
+
+        } else if (t < 10) {
+
+            value = 5600 * Math.pow(t, 0.25) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "1400–1500 nm";
+
+        } else {
+
+            value = 1000;
+            type = "Irradiance (W/m²)";
+            branch = "1400–1500 nm";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 1500–1800 nm */
+
+    if (w > 1500 && w <= 1800) {
+
+        if (t < 1e-9) {
+
+            value = 1e13;
+            type = "Irradiance (W/m²)";
+            branch = "1500–1800 nm";
+
+        } else if (t < 10) {
+
+            value = 5600 * Math.pow(t, 0.25) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "1500–1800 nm";
+
+        } else {
+
+            value = 1000;
+            type = "Irradiance (W/m²)";
+            branch = "1500–1800 nm";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 1800–2600 nm */
+
+    if (w > 1800 && w <= 2600) {
+
+        if (t < 1e-9) {
+
+            value = 1e12;
+            type = "Irradiance (W/m²)";
+            branch = "1800–2600 nm";
+
+        } else if (t < 10) {
+
+            value = 5600 * Math.pow(t, 0.25) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "1800–2600 nm";
+
+        } else {
+
+            value = 1000;
+            type = "Irradiance (W/m²)";
+            branch = "1800–2600 nm";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 2600–1,000,000 nm */
+
+    if (w > 2600 && w <= 1000000) {
+
+        if (t < 1e-9) {
+
+            value = 1e11;
+            type = "Irradiance (W/m²)";
+            branch = "2600–1,000,000 nm";
+
+        } else if (t < 10) {
+
+            value = 5600 * Math.pow(t, 0.25) / t;
+            type = "Equivalent irradiance (W/m²)";
+            branch = "2600–1,000,000 nm";
+
+        } else {
+
+            value = 1000;
+            type = "Irradiance (W/m²)";
+            branch = "2600–1,000,000 nm";
+
+        }
+
+        return {value, type, branch};
+    }
+
+}
+
+
+/* ============================================================
+   SKIN MPE
+============================================================ */
+
+function skinMPE(w, t) {
+
+    let value;
+    let type;
+    let branch;
+
+
+    /* UV */
+
+    if (w >= 180 && w < 400) {
+
+        if (t < 1e-9) {
+
+            value = 3e10;
+
+            if (w > 302.5)
+                value *= calcC2(w);
+
+            type = "Irradiance (W/m²)";
+            branch = "UV short exposure";
+
+        } else {
+
+            value = 1e4 / t;
+
+            if (w > 302.5 && w <= 315)
+                value = calcC2(w) / t;
+
+            type = "Equivalent irradiance (W/m²)";
+            branch = "UV skin MPE";
+
+        }
+
+        return {value, type, branch};
+    }
+
+
+    /* 400–700 */
+
+    if (w >= 400 && w < 700) {
+
+        if (t < 1e-9) {
+
+            value = 2e11;
+            type = "Irradiance (W/m²)";
+
+        } else if (t < 10) {
+
+            value = 1.1e4 * Math.pow(t, 0.25) / t;
+            type = "Equivalent irradiance (W/m²)";
+
+        } else {
+
+            value = 2000;
+            type = "Irradiance (W/m²)";
+
+        }
+
+        branch = "400–700 nm skin MPE";
+
+        return {value, type, branch};
+    }
+
+
+    /* 700–1400 */
+
+    if (w >= 700 && w <= 1400) {
+
+        const C4 = calcC4(w);
+
+        if (t < 1e-9) {
+
+            value = 2e11 * C4;
+            type = "Irradiance (W/m²)";
+
+        } else if (t < 10) {
+
+            value = 1.1e4 * C4 * Math.pow(t, 0.25) / t;
+            type = "Equivalent irradiance (W/m²)";
+
+        } else {
+
+            value = 2000 * C4;
+            type = "Irradiance (W/m²)";
+
+        }
+
+        branch = "700–1400 nm skin MPE";
+
+        return {value, type, branch};
+    }
+
+
+    /* 1400–1500 */
+
+    if (w > 1400 && w <= 1500) {
+
+        if (t < 1e-9)
+            value = 1e12;
+        else if (t < 10)
+            value = 5600 * Math.pow(t, 0.25) / t;
+        else
+            value = 1000;
+
+        type = t < 10
+            ? "Equivalent irradiance (W/m²)"
+            : "Irradiance (W/m²)";
+
+        branch = "1400–1500 nm skin MPE";
+
+        return {value, type, branch};
+    }
+
+
+    /* 1500–1800 */
+
+    if (w > 1500 && w <= 1800) {
+
+        if (t < 1e-9)
+            value = 1e13;
+        else if (t < 10)
+            value = 5600 * Math.pow(t, 0.25) / t;
+        else
+            value = 1000;
+
+        type = t < 10
+            ? "Equivalent irradiance (W/m²)"
+            : "Irradiance (W/m²)";
+
+        branch = "1500–1800 nm skin MPE";
+
+        return {value, type, branch};
+    }
+
+
+    /* 1800–2600 */
+
+    if (w > 1800 && w <= 2600) {
+
+        if (t < 1e-9)
+            value = 1e12;
+        else if (t < 10)
+            value = 5600 * Math.pow(t, 0.25) / t;
+        else
+            value = 1000;
+
+        type = t < 10
+            ? "Equivalent irradiance (W/m²)"
+            : "Irradiance (W/m²)";
+
+        branch = "1800–2600 nm skin MPE";
+
+        return {value, type, branch};
+    }
+
+
+    /* 2600–1,000,000 */
+
+    if (w > 2600 && w <= 1000000) {
+
+        if (t < 1e-9)
+            value = 1e11;
+        else if (t < 10)
+            value = 5600 * Math.pow(t, 0.25) / t;
+        else
+            value = 1000;
+
+        type = t < 10
+            ? "Equivalent irradiance (W/m²)"
+            : "Irradiance (W/m²)";
+
+        branch = "2600–1,000,000 nm skin MPE";
+
+        return {value, type, branch};
+    }
+
+}
+
+
+/* ============================================================
+   MAIN CALCULATION
+============================================================ */
+
+function calculate() {
+
+    hideError();
+
+    const w =
+        parseFloat(document.getElementById("wavelength").value);
+
+    const t =
+        parseFloat(document.getElementById("exposure").value);
+
+
+    /* Validation */
+
+    if (!Number.isFinite(w) || !Number.isFinite(t)) {
+
+        showError("Please enter valid numerical values.");
+        return;
+    }
+
+
+    if (w < 180 || w > 1000000) {
+
+        showError(
+            "Wavelength must be between 180 nm and 1,000,000 nm."
+        );
+
+        return;
+    }
+
+
+    if (t < 1e-13 || t > 30000) {
+
+        showError(
+            "Exposure time must be between 1×10⁻¹³ s and 30,000 s."
+        );
+
+        return;
+    }
+
+
+    /* Calculate */
+
+    const eye = ocularMPE(w, t);
+    const skin = skinMPE(w, t);
+
+    const c1 = calcC1(t);
+    const c2 = calcC2(w);
+    const c3 = calcC3(w);
+    const c4 = calcC4(w);
+    const c7 = calcC7(w);
+    const T1 = calcT1(w);
+
+    const eyeAp = eyeAperture(w, t);
+    const skinAp = skinAperture(w);
+
+
+    /* Display */
+
+    document.getElementById("region").innerText =
+        spectralRegion(w);
+
+    document.getElementById("displayTime").innerText =
+        formatNumber(t) + " s";
+
+
+    document.getElementById("eyeMPE").innerText =
+        formatNumber(eye.value) + " W/m²";
+
+    document.getElementById("eyeType").innerText =
+        eye.type;
+
+
+    document.getElementById("skinMPE").innerText =
+        formatNumber(skin.value) + " W/m²";
+
+    document.getElementById("skinType").innerText =
+        skin.type;
+
+
+    document.getElementById("c1").innerText =
+        formatNumber(c1);
+
+    document.getElementById("c2").innerText =
+        formatNumber(c2);
+
+    document.getElementById("c3").innerText =
+        formatNumber(c3);
+
+    document.getElementById("c4").innerText =
+        formatNumber(c4);
+
+    document.getElementById("c7").innerText =
+        formatNumber(c7);
+
+
+    document.getElementById("t1").innerText =
+        T1 === null
+            ? "N/A"
+            : T1.toExponential(4) + " s";
+
+
+    document.getElementById("eyeAperture").innerText =
+        eyeAp + " mm";
+
+
+    document.getElementById("skinAperture").innerText =
+        skinAp + " mm";
+
+
+    document.getElementById("branch").innerText =
+        eye.branch;
+
+
+    /* Warnings */
+
+    const warning = document.getElementById("warning");
+
+    let warningText = "";
+
+
+    if (w >= 450 && w < 500) {
+
+        warningText +=
+            "450–500 nm uses dual MPE limits. ";
+    }
+
+
+    if (w >= 1250 && w <= 1400) {
+
+        warningText +=
+            "1250–1400 nm requires additional consideration of anterior-eye limitations. ";
+    }
+
+
+    if (warningText !== "") {
+
+        warning.innerText = warningText;
+        warning.style.display = "block";
+
+    } else {
+
+        warning.style.display = "none";
+
+    }
+
+}
+
+
+/* ------------------------------------------------------------
+   Test case
+------------------------------------------------------------ */
+
+function loadTestCase() {
+
+    document.getElementById("wavelength").value = 996;
+    document.getElementById("exposure").value = 10;
+
+    calculate();
+}
+
+
+/* Automatically calculate when page opens */
+
+window.onload = function() {
+
+    calculate();
+
+};
+
+</script>
+
+</body>
+</html>
